@@ -24,6 +24,35 @@ body.role-owner #login,body.role-manager #login{display:none}
 #mgr{display:none}body.role-manager #mgr{display:block}
 body:not(.role-owner)>header,body:not(.role-owner)>nav,body:not(.role-owner)>main{display:none}
 .mwrap{padding:12px;max-width:760px;margin:0 auto}
+.pf-sum{display:grid;grid-template-columns:1fr 1fr 1fr;border:1px solid #cfd8d1;border-radius:18px;overflow:hidden;background:#fff;margin:8px 0 12px}
+.pf-sum>div{padding:14px 6px;text-align:center;cursor:pointer}.pf-sum small{display:block;color:#444;font-size:14px}.pf-sum b{font-size:19px}.pf-sum .on{background:#dbe7f7}
+.pf-search{margin:0 0 12px}.pf-search input{border-radius:24px}
+.pf-card{display:flex;align-items:center;gap:12px;border-radius:16px;padding:14px;margin:0 0 10px;background:#f1f1f1;cursor:pointer}
+.pf-card.get{background:#edf3ee}.pf-card.owe{background:#f4eded}
+.pf-av{width:48px;height:48px;border-radius:50%;background:#dfe5f3;display:flex;align-items:center;justify-content:center;font-size:22px;flex:none}
+.pf-info{flex:1;min-width:0}.pf-info b{display:block;font-size:17px;word-break:break-word}.pf-info span{color:#666;font-size:14px}
+.pf-amt{font-weight:700;font-size:18px}.pf-dots{background:none;border:0;font-size:22px;padding:4px 8px}
+#pfFab{position:fixed;right:18px;bottom:calc(20px + env(safe-area-inset-bottom,0px));width:62px;height:62px;border-radius:50%;border:0;background:#1f6feb;color:#fff;font-size:34px;box-shadow:0 4px 14px #0000004d;z-index:20}
+.pf-screen{position:fixed;inset:0;z-index:40;background:#f4f5f7;overflow:auto;padding-bottom:110px}
+.pf-head{display:flex;align-items:center;gap:10px;padding:14px 16px;background:#eef2f9;position:sticky;top:0;z-index:2}
+.pf-head h3{flex:1;margin:0;font-size:20px}.pf-head button{background:none;border:0;font-size:24px;padding:4px 10px}
+.pf-head .pf-save{background:#1f6feb;color:#fff;border-radius:20px;font-size:16px;padding:8px 20px}
+.pf-body{padding:14px}.pf-box{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px}
+.pf-tog{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.pf-tog button{padding:16px;border-radius:16px;border:2px solid #e2e2e2;background:#f4f4f4;font-size:18px}
+.pf-tog button.sel.got{border-color:#2e9e57;background:#e5f4ea}.pf-tog button.sel.gave{border-color:#d33;background:#fbe9e9}
+.pf-bottom{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));background:#fff;box-shadow:0 -2px 10px #0000001a;z-index:41}
+.pf-bottom button{padding:15px;border-radius:14px;border:0;color:#fff;font-size:18px;font-weight:700}.pf-bottom .got{background:#2e9e57}.pf-bottom .gave{background:#d33}
+.pf-btn{display:inline-block;padding:10px 16px;border-radius:12px;background:#e8eef9;color:#1f4fb4;text-decoration:none;margin:0 8px 8px 0;font-size:16px;border:0}.pf-btn.wa{background:#25d366;color:#fff}
+.pf-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #eee;cursor:pointer}
+#pfSheet{position:fixed;inset:0;z-index:60;background:#00000066;display:flex;align-items:flex-end}
+#pfSheet .sh{background:#fff;width:100%;border-radius:20px 20px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px))}
+#pfSheet button,#pfSheet a{display:block;width:100%;text-align:left;padding:14px;border:0;background:none;font-size:18px;text-decoration:none;color:#222;border-bottom:1px solid #eee}
+.pc{background:#fff;border-radius:14px;padding:14px;margin:0 0 10px;box-shadow:0 2px 9px #1020100b}
+.pc h4{margin:0;font-size:17px}.pc .row2{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:10px 0}
+.pc .stk{font-size:24px;font-weight:700}.pc .stk.low{color:#d33}
+.pc .adj{display:flex;gap:8px;align-items:center}.pc .adj input{width:100%;min-width:0;padding:10px}
+.pc .stat{background:#f3f7f4;border-radius:10px;padding:9px 11px;font-size:14px;margin-top:10px;line-height:1.6}
 </style></head><body>
 <div id="login"><div class="box"><h2>🌱 কৃষি ব্যবসা ম্যানেজার</h2>
 <label>ইমেইল</label><input id="lgEmail" type="email" autocomplete="username" placeholder="ইমেইল">
@@ -59,22 +88,21 @@ body:not(.role-owner)>header,body:not(.role-owner)>nav,body:not(.role-owner)>mai
 <div class="panel" onclick="tab('personal')" style="cursor:pointer"><h2>ব্যক্তিগত দেব/পাব</h2><div class="stats"><div class="stat"><small>মোট পাব</small><b id="dbGet">৳০</b></div><div class="stat"><small>মোট দেব</small><b id="dbOwe">৳০</b></div></div><p class="muted">বন্ধুদের লেনদেন দেখতে বা লিখতে এখানে চাপুন</p></div>
 <div class="panel"><h2>ক্লাউড ব্যাকআপ</h2><p class="muted">আপনার সব তথ্য (ব্যক্তিগত লেনদেনসহ) নিজে থেকে অনলাইনে শুধু আপনার একাউন্টে জমা হয়। ফোন বদলালে বা ডেটা মুছলে এখান থেকে ফিরিয়ে আনতে পারবেন।</p><p class="muted" id="cloudSt"></p><button class="btn primary" id="cloudBtn">ক্লাউড থেকে ফিরিয়ে আনুন</button></div>
 </section>
-<section id="products" class="hidden"><div class="panel"><h2>পণ্যের তালিকা ও স্টক</h2><p class="muted">ইনভয়েসে পাওয়া রেট রাখা হয়েছে। স্টক আপাতত ০; আপনি পরে স্টক যোগ করবেন।</p>
-<div class="tablewrap"><table><thead><tr><th>পণ্য</th><th>ইনভয়েস রেট</th><th>৫% কম রেফারেন্স</th><th>স্টক</th><th>বিক্রয় মূল্য</th><th></th></tr></thead><tbody id="productRows"></tbody></table></div>
-</div><div class="panel"><h2>নতুন পণ্য / স্টক আপডেট</h2><label>পণ্যের নাম</label><input id="pName" placeholder="পণ্যের নাম"><div class="row"><div><label>ক্রয়/ইনভয়েস রেট</label><input id="pCost" type="number" min="0"></div><div><label>বর্তমান স্টক</label><input id="pStock" type="number" min="0" value="0"></div></div><label>বিক্রয় মূল্য (প্রতি ইউনিট)</label><input id="pSell" type="number" min="0" placeholder="বিক্রির দাম"><button class="btn primary" onclick="addProduct()">পণ্য যোগ করুন</button></div></section>
-<section id="sale" class="hidden"><div class="panel"><h2>নতুন বিক্রি লিখুন</h2><label>পণ্য</label><select id="saleProduct"></select><div class="row"><div><label>পরিমাণ</label><input id="saleQty" type="number" min="1" value="1"></div><div><label>প্রতি ইউনিট বিক্রয় মূল্য</label><input id="salePrice" type="number" min="0"></div></div><div class="row"><div><label>ক্রেতার নাম</label><input id="buyer" placeholder="নাম"></div><div><label>জমা টাকা</label><input id="paid" type="number" min="0" value="0"></div></div><button class="btn primary" onclick="recordSale()">বিক্রি সংরক্ষণ</button><p class="muted" id="saleHint"></p></div><div class="panel"><h2>বিক্রির ইতিহাস</h2><div class="tablewrap"><table><thead><tr><th>তারিখ</th><th>পণ্য</th><th>ক্রেতা</th><th>মোট</th><th>জমা</th><th>বাকি</th><th>লাভ</th></tr></thead><tbody id="saleRows"></tbody></table></div></div></section>
+<section id="products" class="hidden"><div class="panel"><h2>পণ্যের তালিকা ও স্টক</h2><p class="muted">প্রতিটা পণ্যের নিচের ঘরে সংখ্যা লিখে <b>+ যোগ</b> চাপলে স্টক বাড়ে, <b>− কমান</b> চাপলে কমে।</p>
+<label>সাজান</label><select id="pSort" onchange="render()"><option value="name">নাম অনুযায়ী</option><option value="sales">বেশি বিক্রি আগে</option><option value="profit">বেশি লাভ আগে</option><option value="low">কম স্টক আগে</option></select></div>
+<div id="productRows"></div>
+<div class="panel"><h2>নতুন পণ্য / স্টক আপডেট</h2><label>পণ্যের নাম</label><input id="pName" placeholder="পণ্যের নাম"><div class="row"><div><label>ক্রয়/ইনভয়েস রেট</label><input id="pCost" type="number" min="0"></div><div><label>বর্তমান স্টক</label><input id="pStock" type="number" min="0" value="0"></div></div><label>বিক্রয় মূল্য (প্রতি ইউনিট)</label><input id="pSell" type="number" min="0" placeholder="বিক্রির দাম"><button class="btn primary" onclick="addProduct()">পণ্য যোগ করুন</button></div></section>
+<section id="sale" class="hidden"><div class="panel"><h2>নতুন বিক্রি লিখুন</h2><label>পণ্য</label><select id="saleProduct"></select><div class="row"><div><label>পরিমাণ</label><input id="saleQty" type="number" min="1" value="1"></div><div><label>প্রতি ইউনিট বিক্রয় মূল্য</label><input id="salePrice" type="number" min="0"></div></div><div class="row"><div><label>ক্রেতার নাম</label><input id="buyer" placeholder="নাম"></div><div><label>জমা টাকা</label><input id="paid" type="number" min="0" value="0"></div></div><button class="btn primary" onclick="recordSale()">বিক্রি সংরক্ষণ</button><p class="muted" id="saleHint"></p></div><div class="panel"><h2>বিক্রির ইতিহাস</h2><div class="tablewrap"><table><thead><tr><th>তারিখ</th><th>পণ্য</th><th>ক্রেতা</th><th>মোট</th><th>জমা</th><th>বাকি</th><th>লাভ</th><th></th></tr></thead><tbody id="saleRows"></tbody></table></div></div></section>
 <section id="expenses" class="hidden"><div class="panel"><h2>খরচ যোগ করুন</h2><label>খরচের ফোল্ডার / খাত</label><input id="expCat" placeholder="যেমন: দোকান ভাড়া, যাতায়াত, বেতন"><label>বিবরণ</label><input id="expDesc" placeholder="খরচের বিবরণ"><label>টাকার পরিমাণ</label><input id="expAmount" type="number" min="0"><button class="btn primary" onclick="addExpense()">খরচ সংরক্ষণ</button></div><div class="panel"><h2>খরচের তালিকা</h2><div id="expenseRows"></div></div></section>
 <section id="report" class="hidden"><div class="panel"><h2>বিক্রি ও লাভের রিপোর্ট</h2><label>সময়</label><select id="rpPeriod" onchange="render()"><option value="today">আজ</option><option value="7">গত ৭ দিন</option><option value="month" selected>এই মাস</option><option value="all">সব সময়</option></select></div>
 <div class="panel"><div class="stats" id="rpStats"></div><p class="muted">লাভ আনুমানিক। ইনভয়েস রেটের ৫% কম দাম ধরে হিসাব করা।</p></div>
 <div class="panel"><h2>পণ্যভিত্তিক হিসাব</h2><div id="rpRows"></div></div></section>
-<section id="personal" class="hidden"><div class="panel"><h2>ব্যক্তিগত লেনদেন</h2><p class="muted">বন্ধু-বান্ধবের সাথে ব্যক্তিগত লেনদেন। এটা ব্যবসার লাভ-ক্ষতির সাথে মেশে না, ম্যানেজার এটা দেখতে পায় না।</p>
-<div class="stats"><div class="stat"><small>মোট পাব</small><b id="pfGet">৳০</b></div><div class="stat"><small>মোট দেব</small><b id="pfOwe">৳০</b></div></div></div>
-<div class="panel"><h2>নতুন লেনদেন</h2><label>নাম</label><input id="pfName" list="pfNames" placeholder="বন্ধুর নাম"><datalist id="pfNames"></datalist>
-<label>ধরন</label><select id="pfType"><option value="gave">আমি দিলাম (আমি পাব)</option><option value="took">আমি নিলাম (আমি দেব)</option><option value="got_back">ফেরত পেলাম</option><option value="paid_back">ফেরত দিলাম</option></select>
-<div class="row"><div><label>টাকা</label><input id="pfAmt" type="number" min="0"></div><div><label>নোট</label><input id="pfNote" placeholder="যেমন: ধার"></div></div>
-<button class="btn primary" onclick="addPersonal()">সংরক্ষণ</button></div>
-<div class="panel"><h2>কার কাছে কত</h2><div id="pfBal"></div></div>
-<div class="panel"><h2>লেনদেনের ইতিহাস</h2><div id="pfRows"></div></div></section>
+<section id="personal" class="hidden">
+<div class="pf-sum"><div id="pfCellGet" onclick="pfSetFilter('get')"><small>⬇ পাবো</small><b id="pfGet" style="color:#2e9e57">৳0</b></div><div id="pfCellOwe" onclick="pfSetFilter('owe')"><small>⬆ দিবো</small><b id="pfOwe" style="color:#d33">৳0</b></div><div id="pfCellAll" class="on" onclick="pfSetFilter('all')"><small>👤 মোট</small><b id="pfCount" style="color:#1f4fb4">0 জন</b></div></div>
+<div class="pf-search"><input id="pfSearch" type="search" placeholder="নাম বা ফোন নম্বর দিয়ে খুঁজুন..." oninput="renderPersonal()"></div>
+<div id="pfList"></div>
+<button id="pfFab" onclick="pfNew()">+</button>
+</section>
 <section id="due" class="hidden"><div class="panel"><h2>ক্রেতাভিত্তিক বাকি হিসাব</h2><div class="tablewrap"><table><thead><tr><th>ক্রেতা</th><th>বাকি</th></tr></thead><tbody id="dueRows"></tbody></table></div></div></section>
 </main>
 <script>
@@ -90,14 +118,142 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>tab(b.dataset.t
 function addProduct(){let name=pName.value.trim(),rate=+pCost.value,stock=+pStock.value,sell=+pSell.value;if(!name||rate<0||!Number.isFinite(rate)){alert('পণ্যের নাম ও সঠিক রেট দিন');return}db.products.push({id:Date.now(),name,invoiceRate:rate,cost:rate*.95,stock,sellPrice:sell});pName.value=pCost.value=pSell.value='';pStock.value=0;save()}
 function recordSale(){let id=+saleProduct.value,p=db.products.find(x=>x.id===id),q=+saleQty.value,price=+salePrice.value,paidAmt=+paid.value;if(!p||q<=0||price<0){alert('সঠিক পণ্য, পরিমাণ ও দাম দিন');return}if(q>p.stock){alert('স্টক যথেষ্ট নেই। আগে পণ্যের স্টক আপডেট করুন।');return}let total=q*price;if(paidAmt>total){alert('জমা টাকা মোট বিক্রির বেশি হতে পারবে না');return}let profit=q*(price-p.cost);p.stock-=q;p.sellPrice=price;db.sales.unshift({date:new Date().toLocaleDateString('bn-BD'),name:p.name,buyer:buyer.value.trim()||'নাম দেওয়া হয়নি',qty:q,total,paid:paidAmt,due:total-paidAmt,profit});buyer.value='';paid.value=0;saleQty.value=1;save();alert('বিক্রি সংরক্ষণ হয়েছে')}
 function addExpense(){let cat=expCat.value.trim()||'অন্যান্য',desc=expDesc.value.trim(),amount=+expAmount.value;if(!amount||amount<0){alert('খরচের সঠিক পরিমাণ দিন');return}db.expenses.unshift({date:new Date().toLocaleDateString('bn-BD'),cat,desc,amount});expDesc.value=expAmount.value='';save()}
-const PT={gave:'আমি দিলাম',took:'আমি নিলাম',got_back:'ফেরত পেলাম',paid_back:'ফেরত দিলাম'};
-function addPersonal(){db.personal=db.personal||[];let name=pfName.value.trim(),amt=+pfAmt.value;if(!name||!(amt>0)){alert('নাম ও সঠিক টাকার পরিমাণ দিন');return}db.personal.unshift({id:Date.now(),date:new Date().toLocaleDateString('bn-BD'),name,type:pfType.value,amount:amt,note:pfNote.value.trim()});pfName.value=pfAmt.value=pfNote.value='';save()}
-function delPersonal(id){if(confirm('এই লেনদেনটি মুছে ফেলবেন?')){db.personal=db.personal.filter(x=>x.id!==id);save()}}
-function renderPersonal(){db.personal=db.personal||[];let bal={};db.personal.forEach(x=>{bal[x.name]=(bal[x.name]||0)+((x.type==='gave'||x.type==='paid_back')?x.amount:-x.amount)});
-let get=0,owe=0;Object.values(bal).forEach(v=>{if(v>0)get+=v;else owe-=v});pfGet.textContent=money(get);pfOwe.textContent=money(owe);dbGet.textContent=money(get);dbOwe.textContent=money(owe);
-pfNames.innerHTML=Object.keys(bal).map(n=>`<option value="${esc(n)}">`).join('');
-pfBal.innerHTML=Object.entries(bal).filter(([n])=>m(n)).map(([n,v])=>`<p>${esc(n)}<span style="float:right;color:${v>0?'#176b43':v<0?'#b3261e':'#666'}">${v>0?'পাব '+money(v):v<0?'দেব '+money(-v):'হিসাব সমান'}</span></p>`).join('')||'<p class="muted">কিছু পাওয়া যায়নি</p>';
-pfRows.innerHTML=db.personal.filter(x=>m(x.name,x.note,x.date)).map(x=>`<p><b>${esc(x.name)}</b> — ${PT[x.type]} <span style="float:right">${money(x.amount)}</span><br><span class="muted">${x.date}${x.note?' • '+esc(x.note):''}</span> <button class="btn danger" style="padding:2px 8px;float:right" onclick="delPersonal(${x.id})">মুছুন</button></p>`).join('')||'<p class="muted">এখনো কোনো লেনদেন নেই</p>'}
+let pfFilter='all',pfNav=[];
+const digits=s=>String(s||'').replace(/[০-৯]/g,c=>'০১২৩৪৫৬৭৮৯'.indexOf(c)).replace(/\D/g,'');
+function waNum(p){let d=digits(p);if(d.startsWith('00'))d=d.slice(2);if(d.startsWith('880'))return d;if(d.startsWith('0'))return '880'+d.slice(1);if(d.length===10&&d[0]==='1')return '880'+d;return d}
+const hasPicker=()=>'contacts' in navigator&&navigator.contacts&&navigator.contacts.select;
+const pfSign=t=>(t==='gave'||t==='paid_back')?1:-1;
+const isoToday=()=>new Date().toLocaleDateString('en-CA');
+const isoBn=iso=>{if(!iso)return '';const p=iso.split('-');return new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString('bn-BD')};
+const pfMsg=p=>p.bal>0?`${p.name}, আপনার কাছে আমার ${money(p.bal)} পাওনা আছে।`:p.bal<0?`${p.name}, আপনার ${money(-p.bal)} আমার কাছে পাওনা আছে।`:`${p.name}, আমাদের হিসাব এখন সমান আছে।`;
+
+function pfData(){
+  db.personal=db.personal||[];db.phones=db.phones||{};db.pmeta=db.pmeta||{};
+  const P={},get=n=>P[n]||(P[n]={name:n,bal:0,last:0});
+  db.personal.forEach(x=>{const p=get(x.name);p.bal+=pfSign(x.type)*(+x.amount||0);p.last=Math.max(p.last,x.id||0)});
+  Object.keys(db.phones).forEach(n=>get(n));Object.keys(db.pmeta).forEach(n=>get(n));
+  Object.values(P).forEach(p=>{const mt=db.pmeta[p.name]||{};p.phone=db.phones[p.name]||'';p.email=mt.email||'';p.address=mt.address||'';p.last=Math.max(p.last,mt.created||0)});
+  return P;
+}
+function pfSetFilter(f){pfFilter=(pfFilter===f&&f!=='all')?'all':f;renderPersonal()}
+function renderPersonal(){
+  const P=pfData(),all=Object.values(P);
+  let g=0,o=0;all.forEach(p=>{if(p.bal>0)g+=p.bal;else o-=p.bal});
+  dbGet.textContent=money(g);dbOwe.textContent=money(o);
+  pfGet.textContent=money(g);pfOwe.textContent=money(o);pfCount.textContent=all.length+' জন';
+  pfCellGet.classList.toggle('on',pfFilter==='get');pfCellOwe.classList.toggle('on',pfFilter==='owe');pfCellAll.classList.toggle('on',pfFilter==='all');
+  const qs=(pfSearch.value||'').trim().toLowerCase(),qd=digits(qs);
+  const list=all.filter(p=>pfFilter==='all'||(pfFilter==='get'?p.bal>0:p.bal<0))
+    .filter(p=>!qs||p.name.toLowerCase().includes(qs)||(qd&&digits(p.phone).includes(qd)))
+    .filter(p=>m(p.name,p.phone)).sort((a,b)=>b.last-a.last);
+  pfList.innerHTML=list.map(p=>`<div class="pf-card ${p.bal>0?'get':p.bal<0?'owe':''}" data-n="${esc(p.name)}" onclick="pfOpen(this.dataset.n)"><div class="pf-av">👤</div><div class="pf-info"><b>${esc(p.name)}</b><span>${esc(p.phone)}</span></div><div class="pf-amt" style="color:${p.bal>0?'#2e9e57':p.bal<0?'#d33':'#777'}">${money(Math.abs(p.bal))}</div><button class="pf-dots" data-n="${esc(p.name)}" onclick="event.stopPropagation();pfMenu(this.dataset.n)">⋮</button></div>`).join('')
+    ||'<p class="muted" style="text-align:center;padding:26px 10px">কেউ নেই। নিচের + চেপে নতুন ব্যক্তি যোগ করুন।</p>';
+}
+
+/* ---- screens (back button friendly) ---- */
+function pfPush(s){pfNav.push(s);history.pushState({pf:pfNav.length},'');pfShow()}
+function pfBack(){if(pfNav.length)history.back()}
+window.addEventListener('popstate',e=>{const d=(e.state&&e.state.pf)||0;if(d<pfNav.length)pfNav.length=d;pfShow()});
+function pfShow(){
+  const sc=document.getElementById('pfScreen');pfSheetClose();
+  const t=pfNav[pfNav.length-1];
+  if(!t){sc.classList.add('hidden');sc.innerHTML='';document.body.style.overflow='';return}
+  sc.classList.remove('hidden');document.body.style.overflow='hidden';
+  sc.innerHTML=t.mode==='person'?pfHtmlPerson(t):t.mode==='tx'?pfHtmlTx(t):pfHtmlForm(t);
+  sc.scrollTop=0;
+}
+function pfOpen(n){pfPush({mode:'person',name:n})}
+function pfNew(){pfPush({mode:'form',name:'',edit:false})}
+function pfEditPerson(n){pfPush({mode:'form',name:n,edit:true})}
+function pfTx(type){const t=pfNav[pfNav.length-1];if(t)pfPush({mode:'tx',name:t.name,type})}
+function pfEditTx(id){const x=db.personal.find(z=>z.id===id);if(x)pfPush({mode:'tx',name:x.name,type:pfSign(x.type)>0?'gave':'got',editId:id})}
+function pfSheetClose(){const sh=document.getElementById('pfSheet');if(sh){sh.style.display='none';sh.innerHTML=''}}
+
+function pfHtmlPerson(t){
+  const p=pfData()[t.name];
+  if(!p)return '<div class="pf-head"><button onclick="pfBack()">←</button><h3>পাওয়া যায়নি</h3></div>';
+  const rows=db.personal.filter(x=>x.name===p.name).sort((a,b)=>(b.id||0)-(a.id||0));
+  const bal=p.bal,col=bal>0?'#2e9e57':bal<0?'#d33':'#777',lab=bal>0?'আপনি পাবেন':bal<0?'আপনি দেবেন':'হিসাব সমান';
+  const acts=p.phone?`<a class="pf-btn wa" href="https://wa.me/${waNum(p.phone)}?text=${encodeURIComponent(pfMsg(p))}" target="_blank" rel="noopener">WhatsApp</a><a class="pf-btn" href="tel:${esc(p.phone)}">কল</a>`:`<button class="pf-btn" data-n="${esc(p.name)}" onclick="pfEditPerson(this.dataset.n)">নম্বর দিন</button>`;
+  const hist=rows.map(x=>{const out=pfSign(x.type)>0,c=out?'#d33':'#2e9e57';return `<div class="pf-row" data-id="${x.id}" onclick="pfTxMenu(+this.dataset.id)"><div><b style="color:${c}">${out?'দিলাম':'পেলাম'}</b><div class="muted">${esc(x.date||'')}${x.note?' • '+esc(x.note):''}${x.due?' • ফেরত: '+esc(x.due):''}</div></div><b style="color:${c}">${money(x.amount)}</b></div>`}).join('')||'<p class="muted">এখনো কোনো লেনদেন নেই</p>';
+  return `<div class="pf-head"><button onclick="pfBack()">←</button><h3>${esc(p.name)}</h3><button data-n="${esc(p.name)}" onclick="pfMenu(this.dataset.n)">⋮</button></div>
+<div class="pf-body"><div class="pf-box"><div style="color:#666">${lab}</div><div style="font-size:30px;font-weight:700;color:${col}">${money(Math.abs(bal))}</div><div class="muted">${esc(p.phone)}${p.address?' • '+esc(p.address):''}</div><div style="margin-top:12px">${acts}</div></div>
+<div class="pf-box"><b>লেনদেন</b>${hist}</div></div>
+<div class="pf-bottom"><button class="got" onclick="pfTx('got')">পেলাম</button><button class="gave" onclick="pfTx('gave')">দিলাম</button></div>`;
+}
+function pfHtmlTx(t){
+  const x=t.editId?db.personal.find(z=>z.id===t.editId):null;
+  const d0=x&&!x.iso?bnDate(x.date):null;
+  const iso=x?(x.iso||(d0?d0.toLocaleDateString('en-CA'):isoToday())):isoToday();
+  return `<div class="pf-head"><button onclick="pfBack()">←</button><h3>${x?'লেনদেন সংশোধন':'লেনদেন অ্যাড করুন'}</h3><button class="pf-save" onclick="pfSaveTx()">সেইভ</button></div>
+<div class="pf-body"><div class="pf-box"><div class="muted">${esc(t.name)}</div><label>তারিখ</label><input id="ptDate" type="date" value="${iso}"></div>
+<div class="pf-tog"><button id="ptGot" class="got ${t.type==='got'?'sel':''}" onclick="pfType('got')">পেলাম</button><button id="ptGave" class="gave ${t.type==='gave'?'sel':''}" onclick="pfType('gave')">দিলাম</button></div>
+<div class="pf-box"><label>টাকার পরিমাণ</label><input id="ptAmt" type="number" inputmode="decimal" min="0" value="${x?x.amount:''}" placeholder="৳">
+<label>বিবরণ (অপশনাল)</label><input id="ptNote" value="${esc(x?(x.note||''):'')}" placeholder="বিবরণ">
+<label>ফেরতের সম্ভাব্য তারিখ (ঐচ্ছিক)</label><input id="ptDue" type="date" value="${x&&x.dueIso?x.dueIso:''}"></div>
+<button class="btn primary" style="width:100%;padding:16px;font-size:18px" onclick="pfSaveTx()">সেইভ</button></div>`;
+}
+function pfType(tp){const t=pfNav[pfNav.length-1];if(!t)return;t.type=tp;ptGot.classList.toggle('sel',tp==='got');ptGave.classList.toggle('sel',tp==='gave')}
+function pfSaveTx(){
+  const t=pfNav[pfNav.length-1];if(!t||t.mode!=='tx')return;
+  const amt=bnNum(ptAmt.value);if(!(amt>0)){alert('সঠিক টাকার পরিমাণ দিন');return}
+  const iso=ptDate.value||isoToday(),due=ptDue.value||'';
+  const rec={name:t.name,type:t.type==='got'?'took':'gave',amount:amt,note:ptNote.value.trim(),iso,date:isoBn(iso),due:due?isoBn(due):'',dueIso:due};
+  if(t.editId){const x=db.personal.find(z=>z.id===t.editId);if(x)Object.assign(x,rec)}else db.personal.unshift(Object.assign({id:Date.now()},rec));
+  save();pfBack();
+}
+function pfHtmlForm(t){
+  const p=t.edit?pfData()[t.name]:null;
+  return `<div class="pf-head"><button onclick="pfBack()">←</button><h3>${p?'ব্যক্তি সংশোধন':'নতুন ব্যক্তি'}</h3><button class="pf-save" onclick="pfSavePerson()">সেইভ</button></div>
+<div class="pf-body"><div class="pf-box"><label>নাম</label><input id="pnName" value="${esc(p?p.name:'')}" placeholder="নাম">
+<label>ফোন নম্বর (ঐচ্ছিক)</label><div style="display:flex;gap:8px"><input id="pnPhone" type="tel" value="${esc(p?p.phone:'')}" placeholder="ফোন নম্বর"><button class="btn" type="button" onclick="pfPick()">📇</button></div>
+<label>ইমেইল (ঐচ্ছিক)</label><input id="pnEmail" type="email" value="${esc(p?p.email:'')}" placeholder="ইমেইল">
+<label>ঠিকানা (ঐচ্ছিক)</label><input id="pnAddr" value="${esc(p?p.address:'')}" placeholder="ঠিকানা"></div>
+<button class="btn primary" style="width:100%;padding:16px;font-size:18px" onclick="pfSavePerson()">সেইভ</button></div>`;
+}
+async function pfPick(){
+  if(!hasPicker()){alert('কন্টাক্ট বাছাই শুধু Android-এর Chrome-এ চলে। নাম ও নম্বর নিজে লিখুন।');return}
+  try{const r=await navigator.contacts.select(['name','tel'],{multiple:false});if(!r||!r.length)return;const c=r[0];
+    if(c.name&&c.name[0]&&!pnName.value.trim())pnName.value=c.name[0];
+    if(c.tel&&c.tel[0])pnPhone.value=c.tel[0].replace(/\s+/g,'')}
+  catch(e){alert('কন্টাক্ট খোলা যায়নি। নাম ও নম্বর নিজে লিখুন।')}
+}
+function pfSavePerson(){
+  const t=pfNav[pfNav.length-1];if(!t||t.mode!=='form')return;
+  const name=pnName.value.trim(),ph=pnPhone.value.trim(),em=pnEmail.value.trim(),ad=pnAddr.value.trim();
+  if(!name){alert('নাম দিন');return}
+  const P=pfData(),old=t.name;
+  if(t.edit){
+    if(name!==old&&P[name]){alert('এই নামে আগেই একজন আছেন');return}
+    if(name!==old){
+      db.personal.forEach(x=>{if(x.name===old)x.name=name});
+      if(db.phones[old]!==undefined){db.phones[name]=db.phones[old];delete db.phones[old]}
+      if(db.pmeta[old]){db.pmeta[name]=db.pmeta[old];delete db.pmeta[old]}
+      pfNav.forEach(s=>{if(s.name===old)s.name=name});
+    }
+  }else if(P[name]){alert('এই নামে আগেই একজন আছেন');return}
+  if(ph)db.phones[name]=ph;else delete db.phones[name];
+  const mt=db.pmeta[name]||{created:Date.now()};mt.email=em;mt.address=ad;db.pmeta[name]=mt;
+  save();pfBack();
+}
+function pfMenu(name){
+  const p=pfData()[name];if(!p)return;const sh=document.getElementById('pfSheet');
+  sh.innerHTML=`<div class="sh" onclick="event.stopPropagation()"><b style="display:block;padding:6px 14px">${esc(name)}</b>${p.phone?`<a href="https://wa.me/${waNum(p.phone)}?text=${encodeURIComponent(pfMsg(p))}" target="_blank" rel="noopener">WhatsApp পাঠান</a><a href="tel:${esc(p.phone)}">কল করুন</a>`:''}<button data-n="${esc(name)}" onclick="pfSheetClose();pfEditPerson(this.dataset.n)">সংশোধন</button><button data-n="${esc(name)}" style="color:#d33" onclick="pfDelPerson(this.dataset.n)">মুছে ফেলুন</button></div>`;
+  sh.style.display='flex';
+}
+function pfTxMenu(id){
+  const x=db.personal.find(z=>z.id===id);if(!x)return;const sh=document.getElementById('pfSheet');
+  sh.innerHTML=`<div class="sh" onclick="event.stopPropagation()"><b style="display:block;padding:6px 14px">${pfSign(x.type)>0?'দিলাম':'পেলাম'} ${money(x.amount)}</b><button onclick="pfSheetClose();pfEditTx(${id})">সংশোধন</button><button style="color:#d33" onclick="pfDelTx(${id})">মুছে ফেলুন</button></div>`;
+  sh.style.display='flex';
+}
+function pfDelTx(id){pfSheetClose();if(confirm('এই লেনদেনটি মুছে ফেলবেন?')){db.personal=db.personal.filter(z=>z.id!==id);save();pfShow()}}
+function pfDelPerson(name){
+  pfSheetClose();
+  if(!confirm(name+' এবং তার সব লেনদেন মুছে ফেলবেন?'))return;
+  db.personal=db.personal.filter(x=>x.name!==name);delete db.phones[name];delete db.pmeta[name];
+  const open=pfNav.length;save();
+  if(open)history.go(-open);
+}
 function bnDate(s){try{const t=String(s).replace(/[০-৯]/g,c=>'০১২৩৪৫৬৭৮৯'.indexOf(c));const p=t.split(/[\/\-.,\s]+/);const d=+p[0],mo=+p[1],y=+p[2];if(!d||!mo||!y)return null;return new Date(y,mo-1,d)}catch(e){return null}}
 function inPeriod(s,per){if(per==='all')return true;const d=bnDate(s);if(!d)return false;const n=new Date(),t0=new Date(n.getFullYear(),n.getMonth(),n.getDate());if(per==='today')return d.getTime()===t0.getTime();if(per==='7')return d>=new Date(t0.getTime()-6*864e5)&&d<=n;return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()}
 const bn=(n,f=0)=>(+n).toLocaleString('bn-BD',{maximumFractionDigits:f});
@@ -107,16 +263,32 @@ S.forEach(s=>{sales+=+s.total||0;profit+=+s.profit||0;due+=+s.due||0;const o=P[s
 E.forEach(e=>{exp+=+e.amount||0});
 const card=(l,v)=>`<div class="stat"><small>${l}</small><b>${v}</b></div>`;
 rpStats.innerHTML=card('মোট বিক্রি',money(sales))+card('আনুমানিক লাভ',money(profit))+card('লাভের হার',sales?bn(profit/sales*100,1)+'%':'—')+card('মোট খরচ',money(exp))+card('খরচ বাদে লাভ',money(profit-exp))+card('বাকি',money(due));
-rpRows.innerHTML=Object.entries(P).sort((a,b)=>b[1].p-a[1].p).map(([n,o])=>`<p><b>${esc(n)}</b> × ${bn(o.q)}<span style="float:right">${money(o.t)}</span><br><span class="muted">লাভ ${money(o.p)} • হার ${o.t?bn(o.p/o.t*100,1)+'%':'—'}</span></p>`).join('')||'<p class="muted">এই সময়ে কোনো বিক্রি নেই</p>'}
+rpRows.innerHTML=Object.entries(P).sort((a,b)=>b[1].p-a[1].p).map(([n,o])=>`<p><b>${esc(n)}</b> × ${bn(o.q)}<span style="float:right">${money(o.t)}</span><br><span class="muted">লাভ ${money(o.p)} • হার ${o.t?bn(o.p/o.t*100,1)+'%':'—'} • অংশ ${sales?bn(o.t/sales*100,1)+'%':'—'}</span></p>`).join('')||'<p class="muted">এই সময়ে কোনো বিক্রি নেই</p>'}
+function stockApply(id,sign){const p=db.products.find(x=>x.id===id);const el=document.getElementById('sa'+id);if(!p||!el)return;const n=bnNum(el.value);if(!(n>0)){alert('ঘরে সংখ্যা লিখুন (কত এলো বা কত গেল)');el.focus();return}p.stock=Math.max(0,(+p.stock||0)+sign*n);save()}
+function renderProducts(){
+  const S={};let T=0;
+  db.sales.forEach(s=>{if(s.cancelled)return;const o=S[s.name]||(S[s.name]={q:0,t:0,p:0});o.q+=+s.qty||0;o.t+=+s.total||0;o.p+=+s.profit||0;T+=+s.total||0});
+  const st=p=>S[p.name]||{q:0,t:0,p:0},by=document.getElementById('pSort').value;
+  const list=db.products.filter(p=>m(p.name,p.note)).slice();
+  if(by==='sales')list.sort((a,b)=>st(b).t-st(a).t);else if(by==='profit')list.sort((a,b)=>st(b).p-st(a).p);else if(by==='low')list.sort((a,b)=>(+a.stock||0)-(+b.stock||0));else list.sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  return list.map(p=>{
+    const o=st(p),stock=+p.stock||0,share=T?o.t/T*100:0,mg=o.t?o.p/o.t*100:0,sold=(o.q+stock)?o.q/(o.q+stock)*100:0;
+    return `<div class="pc"><h4>${esc(p.name)}${p.note?' <span class="pill">যাচাই</span>':''}</h4>
+<div class="muted">ইনভয়েস ${money(p.invoiceRate)} • ৫% কম ${money(p.cost)}</div>
+<div class="row2"><div><div class="muted">স্টক</div><div class="stk ${stock<=0?'low':''}">${bn(stock,2)}</div></div><div style="width:130px"><div class="muted">বিক্রয় মূল্য</div><input type="number" min="0" value="${p.sellPrice||''}" placeholder="দাম" onchange="updateSell(${p.id},this.value)"></div></div>
+<div class="adj"><input id="sa${p.id}" type="number" inputmode="decimal" min="0" placeholder="সংখ্যা লিখুন"><button class="btn primary" onclick="stockApply(${p.id},1)">+ যোগ</button><button class="btn" onclick="stockApply(${p.id},-1)">− কমান</button></div>
+<div class="stat">${o.q?`বিক্রি ${bn(o.q,2)} • ${money(o.t)}<br>মোট বিক্রির অংশ <b>${bn(share,1)}%</b> • আসা মালের <b>${bn(sold,1)}%</b> বিক্রি<br>লাভ ${money(o.p)} • লাভের হার <b>${bn(mg,1)}%</b>`:'এখনো কোনো বিক্রি নেই'}</div>
+<div style="margin-top:8px"><button class="btn" onclick="editProduct(${p.id})">সংশোধন</button> <button class="btn danger" onclick="removeProduct(${p.id})">বাদ</button></div></div>`}).join('')||'<p class="muted">কিছু পাওয়া যায়নি</p>';
+}
 function render(){
 renderPersonal();renderReport();
-productRows.innerHTML=(db.products.filter(p=>m(p.name,p.note)).map(p=>`<tr><td>${esc(p.name)} ${p.note?'<span class="pill">যাচাই</span>':''}<div class="muted">${esc(p.note||'')}</div></td><td>${money(p.invoiceRate)}</td><td>${money(p.cost)}</td><td><input aria-label="স্টক" type="number" min="0" value="${p.stock}" style="width:75px;padding:6px" onchange="updateStock(${p.id},this.value)"></td><td><input aria-label="বিক্রয় মূল্য" type="number" min="0" value="${p.sellPrice||''}" placeholder="দাম" style="width:90px;padding:6px" onchange="updateSell(${p.id},this.value)"></td><td><button class="btn danger" onclick="removeProduct(${p.id})">বাদ</button></td></tr>`).join('')||'<tr><td colspan="6">কিছু পাওয়া যায়নি</td></tr>');
+productRows.innerHTML=renderProducts();
 let keepSel=saleProduct.value;
 saleProduct.innerHTML=db.products.filter(p=>m(p.name)).map(p=>`<option value="${p.id}">${esc(p.name)} — স্টক ${p.stock}</option>`).join('');
 if([...saleProduct.options].some(o=>o.value===keepSel))saleProduct.value=keepSel;
 let p=db.products.find(x=>x.id===+saleProduct.value);if(p){salePrice.value=p.sellPrice||'';saleHint.textContent='ক্রয় হিসাবের জন্য ইনভয়েস রেটের ৫% কম ধরে রেফারেন্স কস্ট রাখা হয়েছে; প্রয়োজন হলে পণ্যের রেট সংশোধন করুন।'}
-saleRows.innerHTML=(db.sales.filter(s=>m(s.name,s.buyer,s.date)).map(s=>`<tr><td>${s.date}</td><td>${esc(s.name)} × ${s.qty}</td><td>${esc(s.buyer)}</td><td>${money(s.total)}</td><td>${money(s.paid)}</td><td>${money(s.due)}</td><td>${money(s.profit)}</td></tr>`).join('')||'<tr><td colspan="7">কিছু পাওয়া যায়নি</td></tr>');
-expenseRows.innerHTML=db.expenses.filter(e=>m(e.cat,e.desc,e.date)).map(e=>`<p><b>${esc(e.cat)}</b> — ${esc(e.desc)} <span style="float:right">${money(e.amount)}</span><br><span class="muted">${e.date}</span></p>`).join('')||(q?'কিছু পাওয়া যায়নি':'এখনো খরচ যোগ করা হয়নি');
+saleRows.innerHTML=(db.sales.filter(s=>m(s.name,s.buyer,s.date)).map(s=>`<tr><td>${s.date}</td><td>${esc(s.name)} × ${s.qty}</td><td>${esc(s.buyer)}</td><td>${money(s.total)}</td><td>${money(s.paid)}</td><td>${money(s.due)}</td><td>${money(s.profit)}</td><td style="white-space:nowrap"><button class="btn" onclick="editSaleO(${db.sales.indexOf(s)})">সংশোধন</button> <button class="btn danger" onclick="delSaleO(${db.sales.indexOf(s)})">মুছুন</button></td></tr>`).join('')||'<tr><td colspan="7">কিছু পাওয়া যায়নি</td></tr>');
+expenseRows.innerHTML=db.expenses.filter(e=>m(e.cat,e.desc,e.date)).map(e=>`<p><b>${esc(e.cat)}</b> — ${esc(e.desc)} <span style="float:right">${money(e.amount)}</span><br><span class="muted">${e.date}</span> <button class="btn" style="padding:2px 10px" onclick="editExp(${db.expenses.indexOf(e)})">সংশোধন</button> <button class="btn danger" style="padding:2px 10px" onclick="delExp(${db.expenses.indexOf(e)})">মুছুন</button></p>`).join('')||(q?'কিছু পাওয়া যায়নি':'এখনো খরচ যোগ করা হয়নি');
 let dueMap={};db.sales.forEach(s=>{if(s.due>0)dueMap[s.buyer]=(dueMap[s.buyer]||0)+s.due});dueRows.innerHTML=Object.entries(dueMap).filter(([n])=>m(n)).map(([n,v])=>`<tr><td>${esc(n)}</td><td>${money(v)}</td></tr>`).join('')||'<tr><td colspan="2">'+(q?'কিছু পাওয়া যায়নি':'কোনো বাকি নেই')+'</td></tr>';
 const sr=document.getElementById('searchResults');
 if(q&&curTab==='home'){let P=db.products.filter(p=>m(p.name,p.note)),S=db.sales.filter(s=>m(s.name,s.buyer,s.date)),E=db.expenses.filter(e=>m(e.cat,e.desc,e.date)),D=Object.entries(dueMap).filter(([n])=>m(n));
@@ -127,12 +299,31 @@ sSales.textContent=money(sales);sExpense.textContent=money(exp);sDue.textContent
 }
 function updateStock(id,v){let p=db.products.find(x=>x.id===id);p.stock=Math.max(0,+v||0);save()}
 function updateSell(id,v){let p=db.products.find(x=>x.id===id);p.sellPrice=Math.max(0,+v||0);save()}
+const bnNum=v=>{const t=String(v).replace(/[০-৯]/g,c=>'০১২৩৪৫৬৭৮৯'.indexOf(c)).replace(/[,\s৳]/g,'');return t===''?NaN:+t};
+function adjStock(id,sign){const p=db.products.find(x=>x.id===id);if(!p)return;const v=prompt(p.name+(sign>0?' — কত যোগ করবেন?':' — কত কমাবেন?')+'\nএখন স্টক: '+p.stock,'');if(v===null)return;const n=bnNum(v);if(!(n>0)){alert('সঠিক সংখ্যা দিন');return}p.stock=Math.max(0,(+p.stock||0)+sign*n);save()}
+function editProduct(id){const p=db.products.find(x=>x.id===id);if(!p)return;const n=prompt('পণ্যের নাম:',p.name);if(n===null)return;const r=prompt('ইনভয়েস রেট (প্রতি ইউনিট):',p.invoiceRate);if(r===null)return;const rate=bnNum(r);if(!n.trim()||!(rate>=0)){alert('নাম ও সঠিক রেট দিন');return}const old=p.name;p.name=n.trim();p.invoiceRate=rate;p.cost=rate*.95;if(old!==p.name)db.sales.forEach(s=>{if(s.name===old)s.name=p.name});save()}
+function editSaleO(i){const s=db.sales[i];if(!s)return;if(s.cancelled){alert('বাতিল এন্ট্রি সংশোধন করা যায় না, শুধু মুছে ফেলা যায়।');return}
+const p=db.products.find(x=>x.name===s.name);
+const a=prompt('পরিমাণ:',s.qty);if(a===null)return;
+const pr=prompt('প্রতি ইউনিট দাম:',s.qty?s.total/s.qty:0);if(pr===null)return;
+const b=prompt('ক্রেতার নাম:',s.buyer);if(b===null)return;
+const d=prompt('জমা টাকা:',s.paid);if(d===null)return;
+const q=bnNum(a),price=bnNum(pr),pd=bnNum(d)||0;
+if(!(q>0)||!(price>=0)){alert('পরিমাণ ও দাম ঠিকমতো দিন');return}
+const total=q*price;if(pd>total){alert('জমা টাকা মোটের বেশি হতে পারবে না');return}
+if(p)p.stock=(+p.stock||0)+(+s.qty||0)-q;
+s.qty=q;s.total=total;s.paid=pd;s.due=total-pd;s.buyer=b.trim()||'নাম দেওয়া হয়নি';if(p)s.profit=q*(price-p.cost);save()}
+function delSaleO(i){const s=db.sales[i];if(!s)return;if(!confirm(s.cancelled?'এই বাতিল এন্ট্রিটি মুছে ফেলবেন?':'এই বিক্রিটি মুছে ফেলবেন? স্টক ফিরে আসবে।'))return;if(!s.cancelled){const p=db.products.find(x=>x.name===s.name);if(p)p.stock=(+p.stock||0)+(+s.qty||0)}db.sales.splice(i,1);save()}
+function editExp(i){const e=db.expenses[i];if(!e)return;const c=prompt('খাত:',e.cat);if(c===null)return;const d=prompt('বিবরণ:',e.desc||'');if(d===null)return;const a=prompt('টাকা:',e.amount);if(a===null)return;const n=bnNum(a);if(!(n>0)){alert('সঠিক টাকা দিন');return}e.cat=c.trim()||'অন্যান্য';e.desc=d.trim();e.amount=n;save()}
+function delExp(i){if(confirm('এই খরচটি মুছে ফেলবেন?')){db.expenses.splice(i,1);save()}}
 function removeProduct(id){if(confirm('পণ্যটি তালিকা থেকে বাদ দেবেন?')){db.products=db.products.filter(p=>p.id!==id);save()}}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function backup(){let a=document.createElement('a'),u=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:'application/json'}));a.href=u;a.download='krishi-business-backup.json';a.click();URL.revokeObjectURL(u)}
 function restore(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!d.products||!d.sales||!d.expenses)throw 0;db=d;save();alert('ব্যাকআপ ফিরিয়ে আনা হয়েছে')}catch(_){alert('ফাইলটি সঠিক ব্যাকআপ নয়')}};r.readAsText(f)}
 render();saleProduct.addEventListener('change',()=>{let p=db.products.find(x=>x.id===+saleProduct.value);salePrice.value=p?.sellPrice||''})
-</script><script type="module">
+</script><div id="pfScreen" class="pf-screen hidden"></div>
+<div id="pfSheet" style="display:none" onclick="pfSheetClose()"></div>
+<script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {initializeFirestore,persistentLocalCache,persistentMultipleTabManager,collection,doc,setDoc,deleteDoc,addDoc,getDoc,getDocs,onSnapshot,query,where} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
