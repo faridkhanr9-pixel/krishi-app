@@ -53,6 +53,13 @@ body:not(.role-owner)>header,body:not(.role-owner)>nav,body:not(.role-owner)>mai
 .pc .stk{font-size:24px;font-weight:700}.pc .stk.low{color:#d33}
 .pc .adj{display:flex;gap:8px;align-items:center}.pc .adj input{width:100%;min-width:0;padding:10px}
 .pc .stat{background:#f3f7f4;border-radius:10px;padding:9px 11px;font-size:14px;margin-top:10px;line-height:1.6}
+.pl{background:#fff;border-radius:14px;overflow:hidden;margin:0 0 10px;box-shadow:0 2px 9px #1020100b}
+.pr{display:flex;align-items:center;gap:10px;padding:14px;cursor:pointer}.pr .no{width:30px;color:#777;flex:none}
+.pr .nm{flex:1;font-weight:600;min-width:0;word-break:break-word}.pr .sk{font-weight:700;white-space:nowrap}.pr .sk.low{color:#d33}
+.pd{padding:4px 14px 14px;border-top:1px solid #eef1ee}.pd .row2{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:10px 0}
+.pd .stk{font-size:24px;font-weight:700}.pd .stk.low{color:#d33}
+.pd .adj{display:flex;gap:8px;align-items:center}.pd .adj input{width:100%;min-width:0;padding:10px}
+.pd .stat{background:#f3f7f4;border-radius:10px;padding:9px 11px;font-size:14px;margin-top:10px;line-height:1.6}
 </style></head><body>
 <div id="login"><div class="box"><h2>🌱 কৃষি ব্যবসা ম্যানেজার</h2>
 <label>ইমেইল</label><input id="lgEmail" type="email" autocomplete="username" placeholder="ইমেইল">
@@ -88,8 +95,8 @@ body:not(.role-owner)>header,body:not(.role-owner)>nav,body:not(.role-owner)>mai
 <div class="panel" onclick="tab('personal')" style="cursor:pointer"><h2>ব্যক্তিগত দেব/পাব</h2><div class="stats"><div class="stat"><small>মোট পাব</small><b id="dbGet">৳০</b></div><div class="stat"><small>মোট দেব</small><b id="dbOwe">৳০</b></div></div><p class="muted">বন্ধুদের লেনদেন দেখতে বা লিখতে এখানে চাপুন</p></div>
 <div class="panel"><h2>ক্লাউড ব্যাকআপ</h2><p class="muted">আপনার সব তথ্য (ব্যক্তিগত লেনদেনসহ) নিজে থেকে অনলাইনে শুধু আপনার একাউন্টে জমা হয়। ফোন বদলালে বা ডেটা মুছলে এখান থেকে ফিরিয়ে আনতে পারবেন।</p><p class="muted" id="cloudSt"></p><button class="btn primary" id="cloudBtn">ক্লাউড থেকে ফিরিয়ে আনুন</button></div>
 </section>
-<section id="products" class="hidden"><div class="panel"><h2>পণ্যের তালিকা ও স্টক</h2><p class="muted">প্রতিটা পণ্যের নিচের ঘরে সংখ্যা লিখে <b>+ যোগ</b> চাপলে স্টক বাড়ে, <b>− কমান</b> চাপলে কমে।</p>
-<label>সাজান</label><select id="pSort" onchange="render()"><option value="name">নাম অনুযায়ী</option><option value="sales">বেশি বিক্রি আগে</option><option value="profit">বেশি লাভ আগে</option><option value="low">কম স্টক আগে</option></select></div>
+<section id="products" class="hidden"><div class="panel"><h2>পণ্যের তালিকা ও স্টক</h2><p class="muted">পণ্যের নামে চাপলে স্টক যোগ, দাম আর বিক্রি-লাভের হিসাব খুলবে। বিক্রি করলে স্টক নিজে থেকে কমে যায়।</p>
+<label>সাজান</label><select id="pSort" onchange="render()"><option value="serial">সিরিয়াল অনুযায়ী</option><option value="name">নাম অনুযায়ী (A-Z)</option><option value="sales">বেশি বিক্রি আগে</option><option value="profit">বেশি লাভ আগে</option><option value="low">কম স্টক আগে</option></select></div>
 <div id="productRows"></div>
 <div class="panel"><h2>নতুন পণ্য / স্টক আপডেট</h2><label>পণ্যের নাম</label><input id="pName" placeholder="পণ্যের নাম"><div class="row"><div><label>ক্রয়/ইনভয়েস রেট</label><input id="pCost" type="number" min="0"></div><div><label>বর্তমান স্টক</label><input id="pStock" type="number" min="0" value="0"></div></div><label>বিক্রয় মূল্য (প্রতি ইউনিট)</label><input id="pSell" type="number" min="0" placeholder="বিক্রির দাম"><button class="btn primary" onclick="addProduct()">পণ্য যোগ করুন</button></div></section>
 <section id="sale" class="hidden"><div class="panel"><h2>নতুন বিক্রি লিখুন</h2><label>পণ্য</label><select id="saleProduct"></select><div class="row"><div><label>পরিমাণ</label><input id="saleQty" type="number" min="1" value="1"></div><div><label>প্রতি ইউনিট বিক্রয় মূল্য</label><input id="salePrice" type="number" min="0"></div></div><div class="row"><div><label>ক্রেতার নাম</label><input id="buyer" placeholder="নাম"></div><div><label>জমা টাকা</label><input id="paid" type="number" min="0" value="0"></div></div><button class="btn primary" onclick="recordSale()">বিক্রি সংরক্ষণ</button><p class="muted" id="saleHint"></p></div><div class="panel"><h2>বিক্রির ইতিহাস</h2><div class="tablewrap"><table><thead><tr><th>তারিখ</th><th>পণ্য</th><th>ক্রেতা</th><th>মোট</th><th>জমা</th><th>বাকি</th><th>লাভ</th><th></th></tr></thead><tbody id="saleRows"></tbody></table></div></div></section>
@@ -265,20 +272,27 @@ const card=(l,v)=>`<div class="stat"><small>${l}</small><b>${v}</b></div>`;
 rpStats.innerHTML=card('মোট বিক্রি',money(sales))+card('আনুমানিক লাভ',money(profit))+card('লাভের হার',sales?bn(profit/sales*100,1)+'%':'—')+card('মোট খরচ',money(exp))+card('খরচ বাদে লাভ',money(profit-exp))+card('বাকি',money(due));
 rpRows.innerHTML=Object.entries(P).sort((a,b)=>b[1].p-a[1].p).map(([n,o])=>`<p><b>${esc(n)}</b> × ${bn(o.q)}<span style="float:right">${money(o.t)}</span><br><span class="muted">লাভ ${money(o.p)} • হার ${o.t?bn(o.p/o.t*100,1)+'%':'—'} • অংশ ${sales?bn(o.t/sales*100,1)+'%':'—'}</span></p>`).join('')||'<p class="muted">এই সময়ে কোনো বিক্রি নেই</p>'}
 function stockApply(id,sign){const p=db.products.find(x=>x.id===id);const el=document.getElementById('sa'+id);if(!p||!el)return;const n=bnNum(el.value);if(!(n>0)){alert('ঘরে সংখ্যা লিখুন (কত এলো বা কত গেল)');el.focus();return}p.stock=Math.max(0,(+p.stock||0)+sign*n);save()}
+let pOpen=null;
+function pToggle(id){pOpen=(pOpen===id)?null:id;render()}
 function renderProducts(){
   const S={};let T=0;
   db.sales.forEach(s=>{if(s.cancelled)return;const o=S[s.name]||(S[s.name]={q:0,t:0,p:0});o.q+=+s.qty||0;o.t+=+s.total||0;o.p+=+s.profit||0;T+=+s.total||0});
   const st=p=>S[p.name]||{q:0,t:0,p:0},by=document.getElementById('pSort').value;
   const list=db.products.filter(p=>m(p.name,p.note)).slice();
-  if(by==='sales')list.sort((a,b)=>st(b).t-st(a).t);else if(by==='profit')list.sort((a,b)=>st(b).p-st(a).p);else if(by==='low')list.sort((a,b)=>(+a.stock||0)-(+b.stock||0));else list.sort((a,b)=>String(a.name).localeCompare(String(b.name)));
-  return list.map(p=>{
-    const o=st(p),stock=+p.stock||0,share=T?o.t/T*100:0,mg=o.t?o.p/o.t*100:0,sold=(o.q+stock)?o.q/(o.q+stock)*100:0;
-    return `<div class="pc"><h4>${esc(p.name)}${p.note?' <span class="pill">যাচাই</span>':''}</h4>
-<div class="muted">ইনভয়েস ${money(p.invoiceRate)} • ৫% কম ${money(p.cost)}</div>
+  if(by==='name')list.sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  else if(by==='sales')list.sort((a,b)=>st(b).t-st(a).t);
+  else if(by==='profit')list.sort((a,b)=>st(b).p-st(a).p);
+  else if(by==='low')list.sort((a,b)=>(+a.stock||0)-(+b.stock||0));
+  return list.map((p,i)=>{
+    const o=st(p),stock=+p.stock||0,open=pOpen===p.id,share=T?o.t/T*100:0,mg=o.t?o.p/o.t*100:0,sold=(o.q+stock)?o.q/(o.q+stock)*100:0;
+    let h=`<div class="pl"><div class="pr" onclick="pToggle(${p.id})"><span class="no">${bn(i+1)}.</span><span class="nm">${esc(p.name)}${p.note?' <span class="pill">যাচাই</span>':''}</span><span class="sk ${stock<=0?'low':''}">স্টক ${bn(stock,2)}</span><span class="muted">${open?'▲':'▼'}</span></div>`;
+    if(open)h+=`<div class="pd"><div class="muted">ইনভয়েস ${money(p.invoiceRate)} • ৫% কম ${money(p.cost)}</div>
 <div class="row2"><div><div class="muted">স্টক</div><div class="stk ${stock<=0?'low':''}">${bn(stock,2)}</div></div><div style="width:130px"><div class="muted">বিক্রয় মূল্য</div><input type="number" min="0" value="${p.sellPrice||''}" placeholder="দাম" onchange="updateSell(${p.id},this.value)"></div></div>
-<div class="adj"><input id="sa${p.id}" type="number" inputmode="decimal" min="0" placeholder="সংখ্যা লিখুন"><button class="btn primary" onclick="stockApply(${p.id},1)">+ যোগ</button><button class="btn" onclick="stockApply(${p.id},-1)">− কমান</button></div>
+<div class="adj"><input id="sa${p.id}" type="number" inputmode="decimal" min="0" placeholder="কত এলো, সংখ্যা লিখুন"><button class="btn primary" onclick="stockApply(${p.id},1)">+ যোগ</button></div>
 <div class="stat">${o.q?`বিক্রি ${bn(o.q,2)} • ${money(o.t)}<br>মোট বিক্রির অংশ <b>${bn(share,1)}%</b> • আসা মালের <b>${bn(sold,1)}%</b> বিক্রি<br>লাভ ${money(o.p)} • লাভের হার <b>${bn(mg,1)}%</b>`:'এখনো কোনো বিক্রি নেই'}</div>
-<div style="margin-top:8px"><button class="btn" onclick="editProduct(${p.id})">সংশোধন</button> <button class="btn danger" onclick="removeProduct(${p.id})">বাদ</button></div></div>`}).join('')||'<p class="muted">কিছু পাওয়া যায়নি</p>';
+<div style="margin-top:10px"><button class="btn" onclick="editProduct(${p.id})">সংশোধন</button></div></div>`;
+    return h+'</div>';
+  }).join('')||'<p class="muted">কিছু পাওয়া যায়নি</p>';
 }
 function render(){
 renderPersonal();renderReport();
@@ -301,7 +315,7 @@ function updateStock(id,v){let p=db.products.find(x=>x.id===id);p.stock=Math.max
 function updateSell(id,v){let p=db.products.find(x=>x.id===id);p.sellPrice=Math.max(0,+v||0);save()}
 const bnNum=v=>{const t=String(v).replace(/[০-৯]/g,c=>'০১২৩৪৫৬৭৮৯'.indexOf(c)).replace(/[,\s৳]/g,'');return t===''?NaN:+t};
 function adjStock(id,sign){const p=db.products.find(x=>x.id===id);if(!p)return;const v=prompt(p.name+(sign>0?' — কত যোগ করবেন?':' — কত কমাবেন?')+'\nএখন স্টক: '+p.stock,'');if(v===null)return;const n=bnNum(v);if(!(n>0)){alert('সঠিক সংখ্যা দিন');return}p.stock=Math.max(0,(+p.stock||0)+sign*n);save()}
-function editProduct(id){const p=db.products.find(x=>x.id===id);if(!p)return;const n=prompt('পণ্যের নাম:',p.name);if(n===null)return;const r=prompt('ইনভয়েস রেট (প্রতি ইউনিট):',p.invoiceRate);if(r===null)return;const rate=bnNum(r);if(!n.trim()||!(rate>=0)){alert('নাম ও সঠিক রেট দিন');return}const old=p.name;p.name=n.trim();p.invoiceRate=rate;p.cost=rate*.95;if(old!==p.name)db.sales.forEach(s=>{if(s.name===old)s.name=p.name});save()}
+function editProduct(id){const p=db.products.find(x=>x.id===id);if(!p)return;const n=prompt('পণ্যের নাম:',p.name);if(n===null)return;const r=prompt('ইনভয়েস রেট (প্রতি ইউনিট):',p.invoiceRate);if(r===null)return;const k=prompt('স্টক (ভুল হলে ঠিক করুন):',p.stock);if(k===null)return;const rate=bnNum(r),stock=bnNum(k);if(!n.trim()||!(rate>=0)||!(stock>=0)){alert('নাম, রেট ও স্টক ঠিকমতো দিন');return}const old=p.name;p.name=n.trim();p.invoiceRate=rate;p.cost=rate*.95;p.stock=stock;if(old!==p.name)db.sales.forEach(s=>{if(s.name===old)s.name=p.name});save()}
 function editSaleO(i){const s=db.sales[i];if(!s)return;if(s.cancelled){alert('বাতিল এন্ট্রি সংশোধন করা যায় না, শুধু মুছে ফেলা যায়।');return}
 const p=db.products.find(x=>x.name===s.name);
 const a=prompt('পরিমাণ:',s.qty);if(a===null)return;
