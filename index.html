@@ -25,7 +25,7 @@ body.role-owner #login,body.role-manager #login{display:none}
 body:not(.role-owner)>header,body:not(.role-owner)>nav,body:not(.role-owner)>main{display:none}
 .mwrap{padding:12px;max-width:760px;margin:0 auto}
 .mtabs{display:flex;gap:8px;margin:0 0 10px}.mtabs button{flex:1;border:0;border-radius:12px;padding:13px;background:#e5eee8;color:#17472e;font-weight:700;font-size:16px}.mtabs button.on{background:#176b43;color:#fff}
-.mp{display:flex;align-items:center;gap:10px;background:#fff;border-radius:14px;padding:13px 14px;margin:0 0 8px;box-shadow:0 2px 9px #1020100b}.mp .no{width:30px;color:#777;flex:none}.mp .nm{flex:1;font-weight:600;min-width:0;word-break:break-word}.mp .rt{text-align:right;white-space:nowrap}.mp .sk{font-weight:700}.mp .sk.low{color:#d33}.mp small{display:block;color:#68776e;font-size:12px}
+.mp{display:flex;align-items:center;gap:10px;background:#fff;border-radius:14px;padding:13px 14px;margin:0 0 8px;box-shadow:0 2px 9px #1020100b}.mp .no{width:30px;color:#777;flex:none}.mp .nm{flex:1;font-weight:600;min-width:0;word-break:break-word}.mp .rt{text-align:right;white-space:nowrap}.mp .pz{display:block;font-weight:700;font-size:18px;color:#176b43}.mp .sk{font-weight:700}.mp .sk.low{color:#d33}.mp small{display:block;color:#68776e;font-size:12px}
 .pf-sum{display:grid;grid-template-columns:1fr 1fr 1fr;border:1px solid #cfd8d1;border-radius:18px;overflow:hidden;background:#fff;margin:8px 0 12px}
 .pf-sum>div{padding:14px 6px;text-align:center;cursor:pointer}.pf-sum small{display:block;color:#444;font-size:14px}.pf-sum b{font-size:19px}.pf-sum .on{background:#dbe7f7}
 .pf-search{margin:0 0 12px}.pf-search input{border-radius:24px}
@@ -387,8 +387,8 @@ function syncCatalog(){
   if(role!=='owner')return;
   const cur=new Set();
   db.products.forEach(p=>{
-    const id=String(p.id),v=p.name+'|'+(+p.sellPrice||0)+'|'+(+p.stock||0);cur.add(id);
-    if(pushed.get(id)!==v){pushed.set(id,v);setDoc(doc(fs,'catalog',id),{name:p.name,sellPrice:+p.sellPrice||0,stock:+p.stock||0}).catch(()=>pushed.delete(id))}
+    const id=String(p.id),v=p.name+'|'+(+p.sellPrice||0)+'|'+(+p.stock||0)+'|'+(+p.invoiceRate||0);cur.add(id);
+    if(pushed.get(id)!==v){pushed.set(id,v);setDoc(doc(fs,'catalog',id),{name:p.name,sellPrice:+p.sellPrice||0,stock:+p.stock||0,rate:+p.invoiceRate||0}).catch(()=>pushed.delete(id))}
   });
   [...pushed.keys()].forEach(id=>{if(!cur.has(id)){pushed.delete(id);deleteDoc(doc(fs,'catalog',id)).catch(()=>{})}});
 }
@@ -414,6 +414,11 @@ function importSales(snap){
   list.forEach(d=>{
     const s=d.data();
     db.imported.push(d.id);
+    if(s.stockAdd){
+      const p=db.products.find(q=>String(q.id)===String(s.productId));
+      if(p)p.stock=(+p.stock||0)+(+s.qty||0);
+      return;
+    }
     if(s.editOf){
       const x=db.sales.find(z=>z.cid===s.editOf&&!z.cancelled);
       if(x){
@@ -457,7 +462,7 @@ async function startOwner(u){
   try{
     const c=await getDocs(collection(fs,'catalog'));
     const ids=new Set(db.products.map(p=>String(p.id)));
-    c.forEach(d=>{if(ids.has(d.id)){const x=d.data();pushed.set(d.id,x.name+'|'+(+x.sellPrice||0)+'|'+(+x.stock||0))}else deleteDoc(d.ref).catch(()=>{})});
+    c.forEach(d=>{if(ids.has(d.id)){const x=d.data();pushed.set(d.id,x.name+'|'+(+x.sellPrice||0)+'|'+(+x.stock||0)+'|'+(+x.rate||0))}else deleteDoc(d.ref).catch(()=>{})});
   }catch(e){}
   syncCatalog();
   if(!db.products.length&&!db.sales.length){
@@ -468,12 +473,16 @@ async function startOwner(u){
 $('cloudBtn').onclick=()=>cloudRestore();
 
 /* ---------- MANAGER ---------- */
-let cat=[],mRows={},mEdit=null,mSold={};
+let cat=[],mRows={},mEdit=null,mSold={},mAdded={};
+let mOpen=null;
+function mpToggle(id){mOpen=(mOpen===id)?null:id;renderMP()}
 function renderMP(){
   const k=($('mpSearch').value||'').trim().toLowerCase();
   const L=cat.filter(p=>!k||p.name.toLowerCase().includes(k));
-  $('mpList').innerHTML=L.map((p,i)=>{const st=+p.stock||0,sd=mSold[p.id]||0;return `<div class="mp"><span class="no">${i+1}.</span><span class="nm">${esc(p.name)}</span><span class="rt"><span class="sk ${st<=0?'low':''}">স্টক ${st}</span><small>${p.sellPrice?'৳'+p.sellPrice:'দাম নেই'}${sd?' • আজ বিক্রি '+sd:''}</small></span></div>`}).join('')||'<p class="muted">কিছু পাওয়া যায়নি</p>';
+  $('mpList').innerHTML=L.map((p,i)=>{const st=+p.stock||0,sd=mSold[p.id]||0,open=mOpen===p.id;
+    return `<div class="pl"><div class="pr" data-id="${esc(p.id)}" onclick="mpToggle(this.dataset.id)"><span class="no">${i+1}.</span><span class="nm">${esc(p.name)}</span><span class="sk ${st<=0?'low':''}">স্টক ${st}</span><span class="muted">${open?'▲':'▼'}</span></div>`+(open?`<div class="pd"><div class="muted" style="font-size:15px;margin-top:10px">ইনভয়েস মূল্য</div><div class="stk" style="font-size:24px;font-weight:700;color:#176b43">${p.rate?'৳'+p.rate:'রেট নেই'}</div><div class="adj" style="margin-top:12px"><input id="ma${esc(p.id)}" type="number" inputmode="decimal" min="0" placeholder="কত মাল এলো, সংখ্যা লিখুন"><button class="btn primary" data-id="${esc(p.id)}" onclick="mpAdd(this.dataset.id)">+ স্টক যোগ</button></div>${(sd||mAdded[p.id])?`<div class="stat">${sd?'আজ বিক্রি '+sd:''}${sd&&mAdded[p.id]?' • ':''}${mAdded[p.id]?'আজ স্টক যোগ '+mAdded[p.id]:''}</div>`:''}</div>`:'')+`</div>`}).join('')||'<p class="muted">কিছু পাওয়া যায়নি</p>';
 }
+window.mpToggle=mpToggle;
 function mTab(t){
   $('mSaleView').style.display=t==='s'?'block':'none';$('mProdView').style.display=t==='p'?'block':'none';
   $('mtS').classList.toggle('on',t==='s');$('mtP').classList.toggle('on',t==='p');
@@ -498,7 +507,7 @@ function startManager(u){
     cat=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.name.localeCompare(b.name));renderOptions();renderMP();
   },()=>{}));
   unsub.push(onSnapshot(query(collection(fs,'sales'),where('by','==',u.uid),where('day','==',dayStr())),{includeMetadataChanges:true},snap=>{
-    const all=snap.docs.map(d=>({...d.data(),id:d.id,pending:d.metadata.hasPendingWrites}));
+    const all0=snap.docs.map(d=>({...d.data(),id:d.id,pending:d.metadata.hasPendingWrites}));const all=all0.filter(r=>!r.stockAdd);mAdded={};all0.filter(r=>r.stockAdd).forEach(r=>{mAdded[r.productId]=(mAdded[r.productId]||0)+(+r.qty||0)});
     mRows={};all.forEach(r=>{mRows[r.id]=r});
     const cx=new Set(all.filter(r=>r.cancelOf).map(r=>r.cancelOf));
     const sup=new Set(all.filter(r=>r.editOf).map(r=>r.editOf));
@@ -509,6 +518,12 @@ function startManager(u){
   },()=>{}));
   window.cancelSale=id=>{const r=mRows[id];if(!r||!confirm('এই বিক্রিটি বাতিল করবেন?'))return;if(mEdit&&mEdit.id===id)exitEdit();addDoc(collection(fs,'sales'),{cancelOf:id,productId:r.productId,name:r.name,qty:1,price:0,total:0,paid:0,due:0,buyer:'',by:u.uid,day:dayStr(),createdAtMs:Date.now()}).catch(e=>alert('বাতিল করা যায়নি: '+(e.code||'')))};
   window.editSale=id=>{const r=mRows[id];if(!r)return;mEdit=r;$('mProd').disabled=true;$('mSearch').disabled=true;$('mQty').value=r.qty;$('mPrice').value=r.price;$('mBuyer').value=r.buyer||'';$('mPaid').value=r.paid||0;$('mSave').textContent='সংশোধন সংরক্ষণ';$('mEditX').style.display='block';$('mEditNote').textContent='সংশোধন চলছে: '+r.name+'। পণ্য বদলাতে হলে বাতিল করে নতুন বিক্রি দিন।';window.scrollTo(0,0)};
+  window.mpAdd=id=>{
+    const inp=$('ma'+id),n=bnNum(inp?inp.value:''),p=cat.find(x=>x.id===id);
+    if(!p||!(n>0)){alert('কত মাল এলো সঠিক সংখ্যা লিখুন');return}
+    if(!confirm(p.name+' — স্টকে '+n+' যোগ করবেন?'))return;
+    addDoc(collection(fs,'sales'),{stockAdd:true,productId:id,name:p.name,qty:n,price:0,total:0,paid:0,due:0,buyer:'',by:u.uid,day:dayStr(),createdAtMs:Date.now()}).then(()=>{if(inp)inp.value=''}).catch(e=>alert('পাঠানো যায়নি: '+(e.code||'')));
+  };
   $('mEditX').onclick=exitEdit;
   $('mSave').onclick=()=>{
     const p=mEdit?{id:mEdit.productId,name:mEdit.name}:cat.find(x=>x.id===$('mProd').value),qty=+$('mQty').value,price=+$('mPrice').value,paid=+$('mPaid').value||0;
