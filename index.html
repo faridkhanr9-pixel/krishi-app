@@ -75,7 +75,7 @@ body:not(.role-owner)>header,body:not(.role-owner)>nav,body:not(.role-owner)>mai
 <div class="panel"><h2>নতুন বিক্রি</h2>
 <label>পণ্য খুঁজুন</label><input id="mSearch" placeholder="পণ্যের নাম লিখুন">
 <label>পণ্য</label><select id="mProd"></select>
-<div class="row"><div><label>পরিমাণ</label><input id="mQty" type="number" min="1" value="1"></div><div><label>প্রতি ইউনিট দাম</label><input id="mPrice" type="number" min="0"></div></div>
+<div class="row"><div><label>পরিমাণ</label><input id="mQty" type="number" min="1" value="1"></div><div><label>মোট বিক্রি (টাকা)</label><input id="mPrice" type="number" min="0" placeholder="মোট কত টাকা"></div></div>
 <p style="margin:10px 0 0;font-size:20px"><b id="mSum">মোট: ৳0</b></p><label>পেমেন্ট</label><div class="mtabs" style="margin-bottom:6px"><button type="button" id="mPayC" class="on">নগদ (পুরো টাকা পেয়েছি)</button><button type="button" id="mPayB">বাকি</button></div><div><label id="mBuyerL">ক্রেতার নাম (না লিখলেও চলবে)</label><input id="mBuyer" list="mCust" placeholder="নাম" autocomplete="off"><datalist id="mCust"></datalist></div><div id="mPaidBox" style="display:none"><label>আজ কত টাকা জমা দিল? (কিছু না দিলে ০)</label><input id="mPaid" type="number" min="0" value="0"><p class="muted" id="mDueNote"></p></div>
 <button class="btn primary" id="mSave" style="width:100%">বিক্রি সংরক্ষণ</button><button class="btn" id="mEditX" style="display:none;width:100%;margin-top:8px">সংশোধন বন্ধ করুন</button><p class="muted" id="mEditNote"></p><p class="muted" id="mMsg"></p></div>
 <div class="panel"><h2>আজকের এন্ট্রি</h2><div id="mList"></div><p><b id="mTotal"></b></p></div>
@@ -106,7 +106,7 @@ body:not(.role-owner)>header,body:not(.role-owner)>nav,body:not(.role-owner)>mai
 <label>সাজান</label><select id="pSort" onchange="render()"><option value="serial">সিরিয়াল অনুযায়ী</option><option value="name">নাম অনুযায়ী (A-Z)</option><option value="sales">বেশি বিক্রি আগে</option><option value="profit">বেশি লাভ আগে</option><option value="low">কম স্টক আগে</option></select></div>
 <div id="productRows"></div>
 <div class="panel"><h2>নতুন পণ্য / স্টক আপডেট</h2><label>পণ্যের নাম</label><input id="pName" placeholder="পণ্যের নাম"><div class="row"><div><label>ক্রয়/ইনভয়েস রেট</label><input id="pCost" type="number" min="0"></div><div><label>বর্তমান স্টক</label><input id="pStock" type="number" min="0" value="0"></div></div><label>বিক্রয় মূল্য (প্রতি ইউনিট)</label><input id="pSell" type="number" min="0" placeholder="বিক্রির দাম"><button class="btn primary" onclick="addProduct()">পণ্য যোগ করুন</button></div></section>
-<section id="sale" class="hidden"><div class="panel"><h2>নতুন বিক্রি লিখুন</h2><label>পণ্য</label><select id="saleProduct"></select><div class="row"><div><label>পরিমাণ</label><input id="saleQty" type="number" min="1" value="1"></div><div><label>প্রতি ইউনিট বিক্রয় মূল্য</label><input id="salePrice" type="number" min="0"></div></div><div class="row"><div><label>ক্রেতার নাম</label><input id="buyer" placeholder="নাম"></div><div><label>জমা টাকা</label><input id="paid" type="number" min="0" value="0"></div></div><button class="btn primary" onclick="recordSale()">বিক্রি সংরক্ষণ</button><p class="muted" id="saleHint"></p></div><div class="panel"><h2>বিক্রির ইতিহাস</h2><div class="tablewrap"><table><thead><tr><th>তারিখ</th><th>পণ্য</th><th>ক্রেতা</th><th>মোট</th><th>জমা</th><th>বাকি</th><th>লাভ</th><th></th></tr></thead><tbody id="saleRows"></tbody></table></div></div></section>
+<section id="sale" class="hidden"><div class="panel"><h2>নতুন বিক্রি লিখুন</h2><label>পণ্য</label><select id="saleProduct"></select><div class="row"><div><label>পরিমাণ</label><input id="saleQty" type="number" min="1" value="1" oninput="saleCalc()"></div><div><label>মোট বিক্রি (টাকা)</label><input id="salePrice" type="number" min="0" placeholder="মোট কত টাকা" oninput="saleCalc()"></div></div><p class="muted" id="saleEach" style="margin:6px 0 0"></p><label>পেমেন্ট</label><div class="mtabs" style="margin-bottom:6px"><button type="button" id="spC" class="on" onclick="salePay(false)">নগদ (পুরো টাকা পেয়েছি)</button><button type="button" id="spB" onclick="salePay(true)">বাকি</button></div><div><label id="buyerL">ক্রেতার নাম (না লিখলেও চলবে)</label><input id="buyer" list="ownCust" placeholder="নাম" autocomplete="off"><datalist id="ownCust"></datalist></div><div id="paidBox" style="display:none"><label>আজ কত টাকা জমা দিল? (কিছু না দিলে ০)</label><input id="paid" type="number" min="0" value="0" oninput="saleCalc()"><p class="muted" id="dueNote"></p></div><button class="btn primary" onclick="recordSale()" style="margin-top:12px">বিক্রি সংরক্ষণ</button><p class="muted" id="saleHint"></p></div><div class="panel"><h2>বিক্রির ইতিহাস</h2><div class="tablewrap"><table><thead><tr><th>তারিখ</th><th>পণ্য</th><th>ক্রেতা</th><th>মোট</th><th>জমা</th><th>বাকি</th><th>লাভ</th><th></th></tr></thead><tbody id="saleRows"></tbody></table></div></div></section>
 <section id="expenses" class="hidden"><div class="panel"><h2>খরচ যোগ করুন</h2><label>খরচের ফোল্ডার / খাত</label><input id="expCat" placeholder="যেমন: দোকান ভাড়া, যাতায়াত, বেতন"><label>বিবরণ</label><input id="expDesc" placeholder="খরচের বিবরণ"><label>টাকার পরিমাণ</label><input id="expAmount" type="number" min="0"><button class="btn primary" onclick="addExpense()">খরচ সংরক্ষণ</button></div><div class="panel"><h2>খরচের তালিকা</h2><div id="expenseRows"></div></div></section>
 <section id="report" class="hidden"><div class="panel"><h2>বিক্রি ও লাভের রিপোর্ট</h2><label>সময়</label><select id="rpPeriod" onchange="render()"><option value="today">আজ</option><option value="7">গত ৭ দিন</option><option value="month" selected>এই মাস</option><option value="all">সব সময়</option></select></div>
 <div class="panel"><div class="stats" id="rpStats"></div><p class="muted">লাভ আনুমানিক। ইনভয়েস রেটের ৫% কম দাম ধরে হিসাব করা।</p></div>
@@ -130,7 +130,10 @@ function money(n){return '৳'+Number(n||0).toLocaleString('en-BD',{maximumFract
 function tab(t){curTab=t;document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));document.getElementById(t).classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));render()}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
 function addProduct(){let name=pName.value.trim(),rate=+pCost.value,stock=+pStock.value,sell=+pSell.value;if(!name||rate<0||!Number.isFinite(rate)){alert('পণ্যের নাম ও সঠিক রেট দিন');return}db.products.push({id:Date.now(),name,invoiceRate:rate,cost:rate*.95,stock,sellPrice:sell});pName.value=pCost.value=pSell.value='';pStock.value=0;save()}
-function recordSale(){let id=+saleProduct.value,p=db.products.find(x=>x.id===id),q=+saleQty.value,price=+salePrice.value,paidAmt=+paid.value;if(!p||q<=0||price<0){alert('সঠিক পণ্য, পরিমাণ ও দাম দিন');return}if(q>p.stock){alert('স্টক যথেষ্ট নেই। আগে পণ্যের স্টক আপডেট করুন।');return}let total=q*price;if(paidAmt>total){alert('জমা টাকা মোট বিক্রির বেশি হতে পারবে না');return}let profit=q*(price-p.cost);p.stock-=q;p.sellPrice=price;db.sales.unshift({date:new Date().toLocaleDateString('bn-BD'),name:p.name,buyer:buyer.value.trim()||'নাম দেওয়া হয়নি',qty:q,total,paid:paidAmt,due:total-paidAmt,profit});buyer.value='';paid.value=0;saleQty.value=1;save();alert('বিক্রি সংরক্ষণ হয়েছে')}
+let sBaki=false;
+function salePay(b){sBaki=b;spC.classList.toggle('on',!b);spB.classList.toggle('on',b);paidBox.style.display=b?'block':'none';buyerL.textContent=b?'ক্রেতার নাম (বাকির জন্য অবশ্যই লিখতে হবে)':'ক্রেতার নাম (না লিখলেও চলবে)';if(!b)paid.value=0;saleCalc()}
+function saleCalc(){const q=+saleQty.value||0,t=bnNum(salePrice.value)||0,pd=bnNum(paid.value)||0;saleEach.textContent=(q>0&&t>0)?'প্রতি পিস গড়ে: '+money(Math.round(t/q*100)/100):'';dueNote.textContent=sBaki?('বাকি থাকবে: '+money(Math.max(t-pd,0))):''}
+function recordSale(){let id=+saleProduct.value,p=db.products.find(x=>x.id===id),q=+saleQty.value,total=bnNum(salePrice.value);if(!p||!(q>0)||!(total>=0)){alert('সঠিক পণ্য, পরিমাণ ও মোট টাকা দিন');return}if(q>p.stock){alert('স্টক যথেষ্ট নেই। আগে পণ্যের স্টক আপডেট করুন।');return}const nm=buyer.value.trim().replace(/\s+/g,' ');let paidAmt=total;if(sBaki){if(!nm){alert('বাকি বিক্রির জন্য ক্রেতার নাম লিখুন');return}paidAmt=bnNum(paid.value)||0;if(paidAmt<0||paidAmt>=total){alert(paidAmt>=total?'জমা মোটের কম হতে হবে। পুরো টাকা পেলে "নগদ" বাছুন।':'সঠিক জমা দিন');return}}const price=Math.round(total/q*100)/100;let profit=total-q*p.cost;p.stock-=q;p.sellPrice=price;db.sales.unshift({date:new Date().toLocaleDateString('bn-BD'),name:p.name,buyer:nm||'নাম দেওয়া হয়নি',qty:q,total,paid:paidAmt,due:total-paidAmt,profit});buyer.value='';paid.value=0;saleQty.value=1;salePrice.value='';salePay(false);save();alert('বিক্রি সংরক্ষণ হয়েছে')}
 function addExpense(){let cat=expCat.value.trim()||'অন্যান্য',desc=expDesc.value.trim(),amount=+expAmount.value;if(!amount||amount<0){alert('খরচের সঠিক পরিমাণ দিন');return}db.expenses.unshift({date:new Date().toLocaleDateString('bn-BD'),cat,desc,amount});expDesc.value=expAmount.value='';save()}
 let pfFilter='all',pfNav=[];
 const digits=s=>String(s||'').replace(/[০-৯]/g,c=>'০১২৩৪৫৬৭৮৯'.indexOf(c)).replace(/\D/g,'');
@@ -320,7 +323,7 @@ productRows.innerHTML=renderProducts();
 let keepSel=saleProduct.value;
 saleProduct.innerHTML=db.products.filter(p=>m(p.name)).map(p=>`<option value="${p.id}">${esc(p.name)} — স্টক ${p.stock}</option>`).join('');
 if([...saleProduct.options].some(o=>o.value===keepSel))saleProduct.value=keepSel;
-let p=db.products.find(x=>x.id===+saleProduct.value);if(p){salePrice.value=p.sellPrice||'';saleHint.textContent='ক্রয় হিসাবের জন্য ইনভয়েস রেটের ৫% কম ধরে রেফারেন্স কস্ট রাখা হয়েছে; প্রয়োজন হলে পণ্যের রেট সংশোধন করুন।'}
+let p=db.products.find(x=>x.id===+saleProduct.value);if(p){ownCust.innerHTML=[...new Set(db.sales.map(x=>x.buyer).filter(n=>n&&n!=='নাম দেওয়া হয়নি'))].sort().map(n=>`<option value="${esc(n)}">`).join('');saleHint.textContent='ক্রয় হিসাবের জন্য ইনভয়েস রেটের ৫% কম ধরে রেফারেন্স কস্ট রাখা হয়েছে; প্রয়োজন হলে পণ্যের রেট সংশোধন করুন।'}
 saleRows.innerHTML=(db.sales.filter(s=>m(s.name,s.buyer,s.date)).map(s=>`<tr><td>${s.date}</td><td>${esc(s.name)} × ${s.qty}</td><td>${esc(s.buyer)}</td><td>${money(s.total)}</td><td>${money(s.paid)}</td><td>${money(s.due)}</td><td>${money(s.profit)}</td><td style="white-space:nowrap"><button class="btn" onclick="editSaleO(${db.sales.indexOf(s)})">সংশোধন</button> <button class="btn danger" onclick="delSaleO(${db.sales.indexOf(s)})">মুছুন</button></td></tr>`).join('')||'<tr><td colspan="7">কিছু পাওয়া যায়নি</td></tr>');
 expenseRows.innerHTML=db.expenses.filter(e=>m(e.cat,e.desc,e.date)).map(e=>`<p><b>${esc(e.cat)}</b> — ${esc(e.desc)} <span style="float:right">${money(e.amount)}</span><br><span class="muted">${e.date}</span> <button class="btn" style="padding:2px 10px" onclick="editExp(${db.expenses.indexOf(e)})">সংশোধন</button> <button class="btn danger" style="padding:2px 10px" onclick="delExp(${db.expenses.indexOf(e)})">মুছুন</button></p>`).join('')||(q?'কিছু পাওয়া যায়নি':'এখনো খরচ যোগ করা হয়নি');
 let dueMap=custDues();dueRows.innerHTML=Object.entries(dueMap).filter(([n])=>m(n)).map(([n,v])=>`<tr><td>${esc(n)}</td><td>${money(v)}</td><td><button class="btn primary" data-n="${esc(n)}" onclick="ownerDeposit(this.dataset.n)">জমা নিন</button></td></tr>`).join('')||'<tr><td colspan="3">'+(q?'কিছু পাওয়া যায়নি':'কোনো বাকি নেই')+'</td></tr>';
@@ -355,7 +358,7 @@ function removeProduct(id){if(confirm('পণ্যটি তালিকা থ
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function backup(){let a=document.createElement('a'),u=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:'application/json'}));a.href=u;a.download='krishi-business-backup.json';a.click();URL.revokeObjectURL(u)}
 function restore(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!d.products||!d.sales||!d.expenses)throw 0;db=d;save();alert('ব্যাকআপ ফিরিয়ে আনা হয়েছে')}catch(_){alert('ফাইলটি সঠিক ব্যাকআপ নয়')}};r.readAsText(f)}
-render();saleProduct.addEventListener('change',()=>{let p=db.products.find(x=>x.id===+saleProduct.value);salePrice.value=p?.sellPrice||''})
+render();saleProduct.addEventListener('change',()=>{salePrice.value='';saleCalc()})
 </script><div id="pfScreen" class="pf-screen hidden"></div>
 <div id="pfSheet" style="display:none" onclick="pfSheetClose()"></div>
 <script type="module">
@@ -520,8 +523,8 @@ function mSetPay(b){
   mCalc();
 }
 function mCalc(){
-  const t=(+$('mQty').value||0)*(+$('mPrice').value||0),pd=+$('mPaid').value||0;
-  $('mSum').textContent='মোট: ৳'+t;
+  const q=+$('mQty').value||0,t=+$('mPrice').value||0,pd=+$('mPaid').value||0;
+  $('mSum').textContent='মোট: ৳'+t+((q>0&&t>0)?' • প্রতি পিস গড়ে ৳'+(Math.round(t/q*100)/100):'');
   $('mDueNote').textContent=mBaki?('বাকি থাকবে: ৳'+Math.max(t-pd,0)):'';
 }
 function mFillCust(){
@@ -547,7 +550,7 @@ function renderOptions(){
   if([...$('mProd').options].some(o=>o.value===keep))$('mProd').value=keep;
   if(!mEdit)fillPrice();
 }
-function fillPrice(){const p=cat.find(x=>x.id===$('mProd').value);$('mPrice').value=p&&p.sellPrice?p.sellPrice:''}
+function fillPrice(){$('mPrice').value=''}
 function exitEdit(){
   mEdit=null;$('mProd').disabled=false;$('mSearch').disabled=false;
   $('mSave').textContent='বিক্রি সংরক্ষণ';$('mEditX').style.display='none';$('mEditNote').textContent='';
@@ -570,7 +573,7 @@ function startManager(u){
     mSold={};rows.filter(r=>!cx.has(r.id)).forEach(r=>{mSold[r.productId]=(mSold[r.productId]||0)+(+r.qty||0)});renderMP();renderMD();
   },()=>{}));
   window.cancelSale=id=>{const r=mRows[id];if(!r||!confirm('এই বিক্রিটি বাতিল করবেন?'))return;if(mEdit&&mEdit.id===id)exitEdit();addDoc(collection(fs,'sales'),{cancelOf:id,productId:r.productId,name:r.name,qty:1,price:0,total:0,paid:0,due:0,buyer:'',by:u.uid,day:dayStr(),createdAtMs:Date.now()}).catch(e=>alert('বাতিল করা যায়নি: '+(e.code||'')))};
-  window.editSale=id=>{const r=mRows[id];if(!r)return;mEdit=r;$('mProd').disabled=true;$('mSearch').disabled=true;$('mQty').value=r.qty;$('mPrice').value=r.price;$('mBuyer').value=r.buyer||'';$('mPaid').value=r.paid||0;mSetPay((+r.due||0)>0);$('mSave').textContent='সংশোধন সংরক্ষণ';$('mEditX').style.display='block';$('mEditNote').textContent='সংশোধন চলছে: '+r.name+'। পণ্য বদলাতে হলে বাতিল করে নতুন বিক্রি দিন।';window.scrollTo(0,0)};
+  window.editSale=id=>{const r=mRows[id];if(!r)return;mEdit=r;$('mProd').disabled=true;$('mSearch').disabled=true;$('mQty').value=r.qty;$('mPrice').value=r.total;$('mBuyer').value=r.buyer||'';$('mPaid').value=r.paid||0;mSetPay((+r.due||0)>0);$('mSave').textContent='সংশোধন সংরক্ষণ';$('mEditX').style.display='block';$('mEditNote').textContent='সংশোধন চলছে: '+r.name+'। পণ্য বদলাতে হলে বাতিল করে নতুন বিক্রি দিন।';window.scrollTo(0,0)};
   window.mdAdd=n=>{
     const inp=$('mdA'),a=bnNum(inp?inp.value:''),x=mDues.find(z=>z.n===n);
     if(!x||!(a>0)){alert('কত টাকা জমা দিল সঠিক সংখ্যা লিখুন');return}
@@ -590,9 +593,9 @@ function startManager(u){
   };
   $('mEditX').onclick=exitEdit;
   $('mSave').onclick=()=>{
-    const p=mEdit?{id:mEdit.productId,name:mEdit.name}:cat.find(x=>x.id===$('mProd').value),qty=+$('mQty').value,price=+$('mPrice').value;
-    if(!p||!(qty>0)||!(price>=0)||$('mPrice').value===''){alert('পণ্য, পরিমাণ ও দাম ঠিকমতো দিন');return}
-    const total=qty*price,buyer=$('mBuyer').value.trim().replace(/\s+/g,' ');
+    const p=mEdit?{id:mEdit.productId,name:mEdit.name}:cat.find(x=>x.id===$('mProd').value),qty=+$('mQty').value,total=+$('mPrice').value,price=qty>0?Math.round(total/qty*100)/100:0;
+    if(!p||!(qty>0)||!(total>=0)||$('mPrice').value===''){alert('পণ্য, পরিমাণ ও মোট টাকা ঠিকমতো দিন');return}
+    const buyer=$('mBuyer').value.trim().replace(/\s+/g,' ');
     let paid=total;
     if(mBaki){
       if(!buyer){alert('বাকি বিক্রির জন্য ক্রেতার নাম লিখুন');return}
