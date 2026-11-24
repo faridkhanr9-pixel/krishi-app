@@ -101,7 +101,7 @@ body:not(.role-owner)>header,body:not(.role-owner)>nav,body:not(.role-owner)>mai
 <div class="actions"><button class="btn primary" onclick="backup()">ব্যাকআপ ডাউনলোড</button><label class="btn" style="margin:0">ব্যাকআপ ফিরিয়ে আনুন<input type="file" accept="application/json" onchange="restore(event)" style="display:none"></label></div></div>
 <div class="panel" onclick="tab('personal')" style="cursor:pointer"><h2>ব্যক্তিগত দেব/পাব</h2><div class="stats"><div class="stat"><small>মোট পাব</small><b id="dbGet">৳০</b></div><div class="stat"><small>মোট দেব</small><b id="dbOwe">৳০</b></div></div><p class="muted">বন্ধুদের লেনদেন দেখতে বা লিখতে এখানে চাপুন</p></div>
 <div class="panel"><h2>ক্লাউড ব্যাকআপ</h2><p class="muted">আপনার সব তথ্য (ব্যক্তিগত লেনদেনসহ) নিজে থেকে অনলাইনে শুধু আপনার একাউন্টে জমা হয়। ফোন বদলালে বা ডেটা মুছলে এখান থেকে ফিরিয়ে আনতে পারবেন।</p><p class="muted" id="cloudSt"></p><button class="btn primary" id="cloudBtn">ক্লাউড থেকে ফিরিয়ে আনুন</button></div>
-<div class="panel"><h2>নতুন করে শুরু করুন</h2><p class="muted">আগের সব বিক্রি, খরচ, বাকি, জমা আর লাভ শূন্য হবে। পণ্যের তালিকা, স্টক, রেট আর আপনার ব্যক্তিগত দেব/পাব ঠিক থাকবে। মোছার আগে পুরোনো সব তথ্যের একটা ব্যাকআপ ফাইল ফোনে নেমে যাবে।</p><button class="btn danger" onclick="freshStart()">বিক্রি-লাভের হিসাব শূন্য করুন</button></div>
+<div class="panel"><h2>নতুন করে শুরু করুন</h2><p class="muted">আগের সব বিক্রি, খরচ, বাকি, জমা আর লাভ শূন্য হবে। পণ্যের তালিকা, স্টক, রেট আর আপনার ব্যক্তিগত দেব/পাব ঠিক থাকবে। মোছার আগে এই ফোনে একটা ব্যাকআপ রাখা হবে।</p><button class="btn danger" onclick="freshStart()">বিক্রি-লাভের হিসাব শূন্য করুন</button></div>
 </section>
 <section id="products" class="hidden"><div class="panel"><h2>পণ্যের তালিকা ও স্টক</h2><p class="muted">পণ্যের নামে চাপলে স্টক যোগ, দাম আর বিক্রি-লাভের হিসাব খুলবে। বিক্রি করলে স্টক নিজে থেকে কমে যায়।</p>
 <label>সাজান</label><select id="pSort" onchange="render()"><option value="serial">সিরিয়াল অনুযায়ী</option><option value="name">নাম অনুযায়ী (A-Z)</option><option value="sales">বেশি বিক্রি আগে</option><option value="profit">বেশি লাভ আগে</option><option value="low">কম স্টক আগে</option></select></div>
@@ -306,11 +306,13 @@ function renderProducts(){
   }).join('')||'<p class="muted">কিছু পাওয়া যায়নি</p>';
 }
 function freshStart(){
-  if(!confirm('আগের সব বিক্রি, খরচ, বাকি ও লাভ শূন্য করে নতুন করে শুরু করবেন?\nপণ্য ও স্টক ঠিক থাকবে।'))return;
-  try{const b=new Blob([JSON.stringify(db)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='krishi-backup-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove()}catch(e){if(!confirm('ব্যাকআপ ফাইল নামানো যায়নি। তবুও মুছবেন?'))return}
-  const t=prompt('নিশ্চিত করতে নিচে  মুছুন  লিখুন:','');
-  if(!t||t.trim()!=='মুছুন'){alert('বাতিল করা হয়েছে, কিছু মোছা হয়নি');return}
-  db.sales=[];db.expenses=[];db.deposits=[];save();alert('হয়ে গেছে। এখন সব হিসাব শূন্য থেকে শুরু।');
+  if(!confirm('আগের সব বিক্রি, খরচ, বাকি ও লাভের হিসাব শূন্য করবেন?\n\nপণ্যের তালিকা, স্টক আর রেট যেমন আছে তেমনই থাকবে।'))return;
+  if(!confirm('শেষবার নিশ্চিত করুন: বিক্রি ও লাভের হিসাব মুছে যাবে।'))return;
+  const n1=db.sales.length,n2=(db.expenses||[]).length,n3=(db.deposits||[]).length;
+  try{localStorage.setItem('krishiBeforeReset',JSON.stringify(db))}catch(e){}
+  db.sales=[];db.expenses=[];db.deposits=[];
+  save();
+  alert('হয়ে গেছে। '+n1+'টি বিক্রি, '+n2+'টি খরচ, '+n3+'টি জমা মোছা হয়েছে।\nপণ্য, স্টক ও রেট আগের মতোই আছে।');
 }
 function custDues(){
   const m={};db.sales.forEach(s=>{if(s.due>0){const n=s.buyer||'নাম দেওয়া হয়নি';m[n]=(m[n]||0)+(+s.due||0)}});
