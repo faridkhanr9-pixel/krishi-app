@@ -1,11 +1,24 @@
-const C='krishi-v2';
-const FILES=['./','index.html','manifest.json','icon-192.png','icon-512.png'];
-self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()))});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
-self.addEventListener('fetch',e=>{
-  if(e.request.method!=='GET')return;
-  const u=new URL(e.request.url);
-  const ok=u.origin===location.origin||(u.hostname==='www.gstatic.com'&&u.pathname.startsWith('/firebasejs/'));
-  if(!ok)return;
-  e.respondWith(fetch(e.request).then(r=>{if(r&&r.ok){const c=r.clone();caches.open(C).then(ch=>ch.put(e.request,c))}return r}).catch(()=>caches.match(e.request).then(m=>m||caches.match('index.html'))))
+// Network-first service worker: always loads the newest app files when online,
+// falls back to the last saved copy only when offline.
+const CACHE = 'krishi-netfirst-v1';
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
+  );
+});
+self.addEventListener('fetch', e => {
+  const r = e.request;
+  if (r.method !== 'GET' || new URL(r.url).origin !== self.location.origin) return;
+  e.respondWith(
+    fetch(r, { cache: 'no-store' })
+      .then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(r, copy)).catch(() => {});
+        return res;
+      })
+      .catch(() => caches.match(r))
+  );
 });
