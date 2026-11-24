@@ -388,7 +388,7 @@ function syncCatalog(){
   const cur=new Set();
   db.products.forEach(p=>{
     const id=String(p.id),v=p.name+'|'+(+p.sellPrice||0)+'|'+(+p.stock||0)+'|'+(+p.invoiceRate||0);cur.add(id);
-    if(pushed.get(id)!==v){pushed.set(id,v);setDoc(doc(fs,'catalog',id),{name:p.name,sellPrice:+p.sellPrice||0,stock:+p.stock||0,rate:+p.invoiceRate||0}).catch(()=>pushed.delete(id))}
+    if(pushed.get(id)!==v){pushed.set(id,v);setDoc(doc(fs,'catalog',id),{name:p.name,sellPrice:+p.sellPrice||0,stock:+p.stock||0,rate:+p.invoiceRate||0}).catch(e=>{pushed.delete(id);if(!window._catWarned){window._catWarned=1;alert('ম্যানেজারের পণ্যের তালিকা পাঠানো যায়নি।\nকারণ: '+(e&&e.code||e)+'\n(Firebase Rules-এ catalog লেখার অনুমতি লাগবে)')}})}
   });
   [...pushed.keys()].forEach(id=>{if(!cur.has(id)){pushed.delete(id);deleteDoc(doc(fs,'catalog',id)).catch(()=>{})}});
 }
